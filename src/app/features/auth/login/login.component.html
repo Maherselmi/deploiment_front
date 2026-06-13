@@ -1,0 +1,135 @@
+<main class="login-page">
+  <section class="login-layout">
+    <div class="login-left">
+      <a class="brand" routerLink="/">
+        <span class="insurflow-logo"></span>
+        <span class="brand-text">
+          <strong>InSurFlow</strong>
+          <small>Assurance intelligente</small>
+        </span>
+      </a>
+
+      <div class="welcome-block">
+        <span class="login-badge">Espace client sécurisé</span>
+
+        <h1>Bienvenue chez InSurFlow</h1>
+
+        <p>
+          Connectez-vous à votre espace personnalisé pour consulter vos contrats,
+          suivre vos sinistres et gérer vos dossiers en toute autonomie.
+        </p>
+      </div>
+
+      <form class="login-form" (ngSubmit)="onLogin()">
+        <div class="form-group">
+          <label for="email">Identifiant</label>
+
+          <div class="input-box">
+            <span class="input-icon email-icon"></span>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              [(ngModel)]="email"
+              placeholder="Votre adresse email"
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+
+          <div class="input-box">
+            <span class="input-icon lock-icon"></span>
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              [(ngModel)]="password"
+              placeholder="Votre mot de passe"
+              autocomplete="current-password"
+            />
+
+            <button type="button" class="eye-btn" (click)="togglePassword()">
+              {{ showPassword ? 'Masquer' : 'Voir' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="remember-row">
+            <input type="checkbox" hidden />
+            <span></span>
+            Se souvenir de moi
+          </label>
+
+          <a class="forgot-link" routerLink="/">
+            Mot de passe oublié ?
+          </a>
+        </div>
+
+        <p class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </p>
+
+        <button class="login-btn-main" type="submit" [disabled]="loading">
+          <span *ngIf="!loading">Me connecter</span>
+          <span *ngIf="loading">Connexion...</span>
+        </button>
+      </form>
+
+      <div class="bottom-area">
+        <div class="create-row">
+          <div>
+            <strong>Vous n’avez pas de compte ?</strong>
+            <p>Créez un compte pour accéder à vos services d’assurance.</p>
+          </div>
+
+          <a routerLink="/" class="create-btn">
+            Créer un compte
+          </a>
+        </div>
+
+        <div class="help-row">
+          <div>
+            <span>Besoin d’aide ?</span>
+            <strong>82 100 001</strong>
+          </div>
+
+          <a routerLink="/" class="contact-btn">
+            Contactez-nous
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-right">
+      <div class="right-logo">
+        <strong>InSurFlow</strong>
+        <span>BY INSURANCE PLATFORM</span>
+      </div>
+
+      <div class="plane"></div>
+      <div class="cloud cloud-one"></div>
+      <div class="cloud cloud-two"></div>
+
+      <div class="right-card">
+        <span>Votre espace digital</span>
+        <h2>Contrats, sinistres et décisions réunis au même endroit.</h2>
+      </div>
+
+      <div class="illustration">
+        <div class="house"></div>
+        <div class="car"></div>
+
+        <div class="family">
+          <div class="person father"></div>
+          <div class="person mother"></div>
+          <div class="person child"></div>
+          <div class="pet"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

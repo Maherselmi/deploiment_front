@@ -1,0 +1,359 @@
+<div class="client-page">
+  <header class="insur-header">
+    <div class="container header-inner">
+      <a class="brand" routerLink="/Client_Space">
+        <span class="insurflow-logo"></span>
+        <span class="brand-text">
+          <strong>InSurFlow</strong>
+          <small>ESPACE CLIENT</small>
+        </span>
+      </a>
+
+      <nav class="nav-links">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          [class.active]="isActiveNav(item.route)"
+        >
+          {{ item.label }}
+        </a>
+      </nav>
+
+      <button class="login-btn" type="button" (click)="logout()">
+        Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="client-hero">
+      <div class="container client-hero-layout">
+        <div class="client-welcome-card">
+          <div class="client-profile">
+            <div class="client-avatar">{{ initials }}</div>
+
+            <div>
+              <span class="client-label">Espace client sécurisé</span>
+              <h1>Bonjour, {{ fullName }}</h1>
+              <p>
+                Consultez vos contrats, déclarez un sinistre et suivez vos dossiers
+                depuis un espace unique.
+              </p>
+            </div>
+          </div>
+
+          <div class="client-info-grid">
+            <div>
+              <span>Email</span>
+              <strong *ngIf="client">{{ client.email }}</strong>
+              <strong *ngIf="!client">Non disponible</strong>
+            </div>
+
+            <div>
+              <span>Statut du compte</span>
+              <strong>Actif</strong>
+            </div>
+
+            <div>
+              <span>Prochaine échéance</span>
+              <strong>{{ nextRenewalLabel }}</strong>
+            </div>
+          </div>
+
+          <div class="client-actions">
+            <a class="btn btn-primary" routerLink="/Claim_Home">
+              Déclarer un sinistre
+            </a>
+
+            <a class="btn btn-outline" routerLink="/PolicesList">
+              Consulter mes contrats
+            </a>
+
+            <a class="btn btn-outline" routerLink="/Consulter">
+              Voir mes dossiers
+            </a>
+          </div>
+        </div>
+
+        <div class="client-summary-card">
+          <div class="summary-header">
+            <span>Résumé de mon compte</span>
+            <small>Mis à jour aujourd’hui</small>
+          </div>
+
+          <div class="summary-grid">
+            <div>
+              <strong>{{ activeContractsCount }}</strong>
+              <span>Contrats actifs</span>
+            </div>
+
+            <div>
+              <strong>{{ activeClaimsCount }}</strong>
+              <span>Sinistres ouverts</span>
+            </div>
+
+            <div>
+              <strong>{{ expiredContractsCount }}</strong>
+              <span>Contrats expirés</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="overview-section">
+      <div class="container">
+        <div class="section-title">
+          <span class="eyebrow">Tableau de bord</span>
+          <h2>Vue d’ensemble</h2>
+          <p>
+            Un aperçu rapide de vos contrats, sinistres et catégories d’assurance.
+          </p>
+        </div>
+
+        <div class="overview-grid">
+          <article class="overview-card">
+            <span class="overview-icon">📄</span>
+            <h3>Contrats actifs</h3>
+            <strong>{{ activeContractsCount }}</strong>
+            <p>Polices actuellement valides.</p>
+          </article>
+
+          <article class="overview-card">
+            <span class="overview-icon">🛡️</span>
+            <h3>Sinistres ouverts</h3>
+            <strong>{{ activeClaimsCount }}</strong>
+            <p>Dossiers en cours de traitement.</p>
+          </article>
+
+          <article class="overview-card">
+            <span class="overview-icon">⏳</span>
+            <h3>Contrats expirés</h3>
+            <strong>{{ expiredContractsCount }}</strong>
+            <p>Polices arrivées à échéance.</p>
+          </article>
+
+          <article class="overview-card">
+            <span class="overview-icon">📁</span>
+            <h3>Types couverts</h3>
+            <strong>{{ totalTypesCount }}</strong>
+            <p>Catégories associées à votre profil.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="actions-section">
+      <div class="container">
+        <div class="section-title center">
+          <span class="eyebrow">Actions rapides</span>
+          <h2>Vos services principaux</h2>
+          <p>
+            Accédez rapidement aux fonctionnalités essentielles.
+          </p>
+        </div>
+
+        <div class="products-carousel">
+          <a
+            class="product-card"
+            *ngFor="let action of quickActions"
+            [routerLink]="action.route"
+          >
+            <div class="product-icon">
+              <span *ngIf="action.icon === 'contracts'">📄</span>
+              <span *ngIf="action.icon === 'claims'">🛡️</span>
+              <span *ngIf="action.icon === 'documents'">📁</span>
+            </div>
+
+            <span>Service client</span>
+            <h3>{{ action.title }}</h3>
+            <p>{{ action.text }}</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="contracts-section">
+      <div class="container">
+        <div class="section-title">
+          <span class="eyebrow">Mes contrats</span>
+          <h2>Vos polices d’assurance</h2>
+
+          <p *ngIf="!policiesError">
+            Consultez l’état de vos contrats, leurs dates de validité et leurs
+            informations principales.
+          </p>
+
+          <p *ngIf="policiesError">{{ policiesError }}</p>
+        </div>
+
+        <div class="contracts-grid" *ngIf="loadingPolicies">
+          <article class="contract-card">
+            <span>...</span>
+            <h3>Chargement</h3>
+            <p>Récupération de vos contrats en cours.</p>
+          </article>
+        </div>
+
+        <div class="contracts-grid" *ngIf="!loadingPolicies && activePolicies.length">
+          <article
+            class="contract-card"
+            *ngFor="let policy of activePolicies"
+            [ngClass]="getPolicyTone(policy)"
+          >
+            <span>{{ getPolicyStatus(policy) }}</span>
+            <h3>{{ getPolicyTitle(policy) }}</h3>
+            <p>{{ getPolicySubtitle(policy) }}</p>
+
+            <div class="contract-details">
+              <div>
+                <small>Numéro</small>
+                <strong>{{ policy.policyNumber }}</strong>
+              </div>
+
+              <div>
+                <small>Date début</small>
+                <strong>{{ formatDate(policy.startDate) }}</strong>
+              </div>
+
+              <div>
+                <small>Date fin</small>
+                <strong>{{ formatDate(policy.endDate) }}</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div
+          class="contracts-grid"
+          *ngIf="!loadingPolicies && !activePolicies.length && !policiesError"
+        >
+          <article class="contract-card">
+            <span>0</span>
+            <h3>Aucun contrat</h3>
+            <p>Aucune police d’assurance n’est encore associée à votre compte.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="claims-section">
+      <div class="container claims-layout">
+        <div class="claims-content">
+          <span class="mini-title">Mes sinistres</span>
+          <h2>Suivi des dossiers récents</h2>
+          <p>
+            Retrouvez les derniers dossiers ouverts et les actions importantes.
+          </p>
+
+          <div class="steps" *ngIf="claims.length > 0">
+            <div class="step" *ngFor="let claim of claims">
+              <span>!</span>
+              <div>
+                <h4>{{ claim.title }}</h4>
+                <p>{{ claim.meta }}</p>
+                <p>{{ claim.message }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="steps" *ngIf="claims.length === 0">
+            <div class="step">
+              <span>✓</span>
+              <div>
+                <h4>Aucun sinistre récent</h4>
+                <p>Vous n’avez aucun dossier en cours pour le moment.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-preview">
+          <div class="preview-top">
+            <span>État des sinistres</span>
+            <small>{{ activeClaimsCount }} ouverts</small>
+          </div>
+
+          <div class="preview-list" *ngIf="claims.length > 0">
+            <div *ngFor="let claim of claims">
+              <span
+                class="dot"
+                [class.orange]="claim.statusClass === 'warning'"
+                [class.blue]="claim.statusClass === 'info'"
+                [class.purple]="claim.statusClass === 'danger'"
+              ></span>
+
+              <p>{{ claim.title }}</p>
+              <strong>{{ claim.status }}</strong>
+            </div>
+          </div>
+
+          <div class="preview-list" *ngIf="claims.length === 0">
+            <div>
+              <span class="dot green"></span>
+              <p>Aucun dossier ouvert</p>
+              <strong>OK</strong>
+            </div>
+          </div>
+
+          <div class="hero-actions center-actions">
+            <a class="btn btn-primary" routerLink="/Claim_Home">
+              Déclarer un nouveau sinistre
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="support-section">
+      <div class="container support-box">
+        <div>
+          <span class="eyebrow">Besoin d’aide ?</span>
+          <h2>Votre conseiller reste disponible</h2>
+          <p>
+            Consultez vos dossiers, vos contrats ou démarrez une nouvelle déclaration
+            depuis votre espace client.
+          </p>
+        </div>
+
+        <div class="support-actions">
+          <a class="btn btn-primary" routerLink="/Consulter">
+            Mes dossiers
+          </a>
+
+          <a class="btn btn-outline" routerLink="/Claim_Home">
+            Déclarer un sinistre
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- CHATBOT FLOTTANT CLAIR AU CENTRE DROIT -->
+  <div class="chatbot-widget">
+    <button
+      class="chatbot-launcher ai-bot"
+      type="button"
+      aria-label="Ouvrir l'assistant InSurFlow"
+      title="Ouvrir l'assistant InSurFlow"
+      (click)="openAssistantPage()"
+    >
+      <span class="bot-pulse"></span>
+
+      <div class="bot-antenna"></div>
+
+      <div class="bot-head">
+        <span class="bot-eye bot-eye-left"></span>
+        <span class="bot-eye bot-eye-right"></span>
+        <span class="bot-smile"></span>
+      </div>
+
+      <div class="bot-chip">IA</div>
+
+      <div class="bot-tooltip">
+        <strong>Assistant IA</strong>
+        <small>Déclarer un sinistre</small>
+      </div>
+    </button>
+  </div>
+</div>

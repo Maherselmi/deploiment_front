@@ -1,0 +1,270 @@
+<main class="report-page">
+  <header class="insur-header">
+    <div class="container header-inner">
+      <a class="brand" routerLink="/Client_Space">
+        <span class="insurflow-logo"></span>
+
+        <span class="brand-text">
+          <strong>InSurFlow</strong>
+          <small>RAPPORT DOSSIER</small>
+        </span>
+      </a>
+
+      <nav class="nav-links">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          [class.active]="isActiveNav(item.route)"
+        >
+          {{ item.label }}
+        </a>
+      </nav>
+
+      <button class="login-btn" type="button" (click)="logout()">
+        Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <section class="content-section">
+    <div class="container">
+      <section class="loading-state" *ngIf="loading">
+        <div class="loader"></div>
+        <p>Chargement du rapport...</p>
+      </section>
+
+      <section class="empty-state" *ngIf="!loading && !claim">
+        <div class="empty-icon"></div>
+
+        <h2>Rapport introuvable</h2>
+
+        <p>
+          Le dossier demandé n’existe pas ou n’est pas accessible depuis votre espace.
+        </p>
+
+        <button class="btn btn-primary" type="button" (click)="goBack()">
+          Retour aux dossiers
+        </button>
+      </section>
+
+      <ng-container *ngIf="!loading && claim">
+        <section class="report-hero">
+          <div class="report-welcome-card">
+            <span class="client-label">Rapport détaillé</span>
+
+            <h1>Dossier #{{ claim.id }}</h1>
+
+            <p>
+              Consultez les informations du sinistre, la police associée,
+              le statut du traitement et le rapport client.
+            </p>
+
+            <div class="client-actions">
+              <button class="btn btn-primary" type="button" (click)="goBack()">
+                Retour aux dossiers
+              </button>
+
+              <button class="btn btn-outline" type="button" (click)="goToClaimHome()">
+                Déclarer un sinistre
+              </button>
+            </div>
+          </div>
+
+          <div class="report-summary-card">
+            <div class="summary-header">
+              <span>Statut actuel</span>
+
+              <small
+                class="status-badge"
+                [ngClass]="getStatusClass(claim.status)"
+              >
+                {{ formatStatus(claim.status) }}
+              </small>
+            </div>
+
+            <div class="report-ring">
+              <div>
+                <strong>#{{ claim.id }}</strong>
+                <span>Référence</span>
+              </div>
+            </div>
+
+            <div class="widget-lines">
+              <div>
+                <span class="dot purple"></span>
+                <p>Police {{ getPolicyNumber() }}</p>
+              </div>
+
+              <div>
+                <span class="dot blue"></span>
+                <p>{{ claim.incidentDate | date:'dd MMM yyyy' }}</p>
+              </div>
+
+              <div>
+                <span class="dot" [ngClass]="getStatusClass(claim.status)"></span>
+                <p>{{ formatStatus(claim.status) }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="summary-grid">
+          <article class="summary-card">
+            <span>Client</span>
+            <strong>{{ getClientFullName() }}</strong>
+            <p>Nom du client associé au dossier.</p>
+          </article>
+
+          <article class="summary-card">
+            <span>Police</span>
+            <strong>{{ getPolicyNumber() }}</strong>
+            <p>Contrat utilisé pour ce sinistre.</p>
+          </article>
+
+          <article class="summary-card">
+            <span>Date du sinistre</span>
+            <strong>{{ claim.incidentDate | date:'dd MMM yyyy' }}</strong>
+            <p>Date déclarée pour l’incident.</p>
+          </article>
+
+          <article class="summary-card">
+            <span>Statut</span>
+            <strong>{{ formatStatus(claim.status) }}</strong>
+            <p>État actuel du traitement.</p>
+          </article>
+        </section>
+
+        <section class="report-grid">
+          <article class="panel details-panel">
+            <div class="panel-header">
+              <span>Résumé</span>
+              <h2>Informations du dossier</h2>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-item full">
+                <span>Description</span>
+                <p>{{ claim.description || 'Aucune description disponible.' }}</p>
+              </div>
+
+              <div class="info-item">
+                <span>Client</span>
+                <strong>{{ getClientFullName() }}</strong>
+              </div>
+
+              <div class="info-item">
+                <span>Police</span>
+                <strong>{{ getPolicyNumber() }}</strong>
+              </div>
+
+              <div class="info-item">
+                <span>Date du sinistre</span>
+                <strong>{{ claim.incidentDate | date:'dd MMM yyyy' }}</strong>
+              </div>
+
+              <div class="info-item">
+                <span>Statut</span>
+                <strong>{{ formatStatus(claim.status) }}</strong>
+              </div>
+
+              <div class="info-item">
+                <span>Type contrat</span>
+                <strong>{{ claim.policy?.type || '-' }}</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel status-panel">
+            <div class="panel-header">
+              <span>Décision</span>
+              <h2>État du traitement</h2>
+            </div>
+
+            <div class="decision-card">
+              <span
+                class="large-status"
+                [ngClass]="getStatusClass(claim.status)"
+              >
+                {{ formatStatus(claim.status) }}
+              </span>
+
+              <h3>Dossier #{{ claim.id }}</h3>
+
+              <p>
+                Le statut affiché correspond à la dernière décision ou étape
+                enregistrée pour ce dossier.
+              </p>
+            </div>
+
+            <div class="timeline">
+              <div class="timeline-item active">
+                <span></span>
+                <div>
+                  <strong>Déclaration reçue</strong>
+                  <p>Le sinistre a été enregistré dans InSurFlow.</p>
+                </div>
+              </div>
+
+              <div
+                class="timeline-item"
+                [class.active]="claim.status !== 'SUBMITTED'"
+              >
+                <span></span>
+                <div>
+                  <strong>Analyse du dossier</strong>
+                  <p>Les informations et justificatifs sont en traitement.</p>
+                </div>
+              </div>
+
+              <div
+                class="timeline-item"
+                [class.active]="
+                  claim.status === 'APPROVED' ||
+                  claim.status === 'REJECTED' ||
+                  claim.status === 'CLOSED'
+                "
+              >
+                <span></span>
+                <div>
+                  <strong>Décision finale</strong>
+                  <p>La décision est disponible selon le statut du dossier.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel report-text-panel">
+          <div class="panel-header">
+            <span>Rapport client</span>
+            <h2>Compte rendu</h2>
+          </div>
+
+          <div class="report-text" *ngIf="claim.clientReport; else emptyReport">
+            {{ claim.clientReport }}
+          </div>
+
+          <ng-template #emptyReport>
+            <div class="report-empty">
+              Le rapport client n’est pas encore disponible pour ce dossier.
+            </div>
+          </ng-template>
+        </section>
+
+        <section class="bottom-actions">
+          <button class="btn-action secondary" type="button" (click)="goBack()">
+            Retour aux dossiers
+          </button>
+
+          <button class="btn-action light" type="button" (click)="goToPolice()">
+            Voir mes polices
+          </button>
+
+          <button class="btn-action primary" type="button" (click)="goToClaimHome()">
+            Déclarer un nouveau sinistre
+          </button>
+        </section>
+      </ng-container>
+    </div>
+  </section>
+</main>

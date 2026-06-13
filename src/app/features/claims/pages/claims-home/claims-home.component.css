@@ -1,0 +1,858 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:host {
+  --primary: #7c4dff;
+  --primary-dark: #2b0f55;
+  --primary-deep: #16002f;
+  --primary-soft: #efe7ff;
+  --primary-light: #ded0ff;
+
+  --yellow: #fff2a8;
+  --yellow-soft: #fff8cf;
+  --pink: #e7a3cb;
+  --pink-soft: #f7d7ea;
+  --lavender-soft: #f1edf7;
+
+  --text: #2b1745;
+  --muted: #8c789f;
+  --bg: #f8f5fb;
+  --white: #ffffff;
+  --line: rgba(75, 45, 117, 0.13);
+
+  --shadow: 0 28px 70px rgba(63, 32, 105, 0.16);
+  --shadow-soft: 0 18px 45px rgba(63, 32, 105, 0.10);
+  --shadow-purple: 0 20px 42px rgba(124, 77, 255, 0.26);
+
+  display: block;
+  min-height: 100vh;
+  font-family: 'Outfit', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+}
+
+.container {
+  width: min(1360px, calc(100% - 56px));
+  margin: 0 auto;
+}
+
+.claims-home-page {
+  min-height: 100vh;
+  overflow: visible;
+  padding-top: 78px;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(255, 242, 168, 0.55), transparent 24%),
+    radial-gradient(circle at 84% 4%, rgba(231, 163, 203, 0.38), transparent 26%),
+    var(--bg);
+}
+
+/* HEADER FIXE */
+
+.insur-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  height: 78px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 8px 28px rgba(63, 32, 105, 0.08);
+}
+
+.header-inner {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.brand {
+  min-width: 220px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.insurflow-logo {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: inline-block;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d4aff 55%, #4f2bd8 100%);
+  transform: rotate(7deg);
+  box-shadow:
+    0 14px 28px rgba(124, 77, 255, 0.32),
+    inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.insurflow-logo::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.insurflow-logo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 255, 255, 0) 48%
+  );
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brand-text strong {
+  color: var(--primary-deep);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.brand-text small {
+  margin-top: 4px;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.nav-links {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 34px;
+}
+
+.nav-links a {
+  color: #80699a;
+  font-size: 17px;
+  font-weight: 700;
+  transition: 0.22s ease;
+  white-space: nowrap;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--primary);
+}
+
+.login-btn {
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: 14px;
+  color: var(--primary-deep);
+  background: linear-gradient(135deg, var(--yellow), #ffef8b);
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 14px 30px rgba(255, 217, 82, 0.30);
+  transition: 0.25s ease;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* BUTTONS */
+
+.btn {
+  min-height: 62px;
+  padding: 0 34px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+}
+
+.btn-primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, #7c4dff, #5a2ee8);
+  box-shadow: var(--shadow-purple);
+}
+
+.btn-outline {
+  color: var(--primary-dark);
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(124, 77, 255, 0.24);
+}
+
+/* HERO */
+
+.claims-hero {
+  padding: 70px 0 55px;
+  background:
+    radial-gradient(circle at 10% 15%, rgba(255, 242, 168, 0.65), transparent 28%),
+    radial-gradient(circle at 90% 10%, rgba(231, 163, 203, 0.35), transparent 30%),
+    linear-gradient(180deg, #fbf8ff 0%, #f8f5fb 100%);
+}
+
+.claims-hero-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 32px;
+  align-items: stretch;
+}
+
+.claims-welcome-card,
+.claim-summary-card {
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.claims-welcome-card {
+  padding: 42px;
+}
+
+.client-profile {
+  display: flex;
+  gap: 26px;
+  align-items: flex-start;
+}
+
+.client-avatar {
+  width: 92px;
+  height: 92px;
+  border-radius: 28px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  font-size: 30px;
+  font-weight: 900;
+  box-shadow: var(--shadow-purple);
+}
+
+.client-label {
+  display: inline-flex;
+  margin-bottom: 14px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  color: var(--primary-dark);
+  background: linear-gradient(135deg, var(--primary-soft), var(--yellow-soft));
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.claims-welcome-card h1 {
+  color: var(--primary-deep);
+  font-size: clamp(38px, 4vw, 58px);
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+.claims-welcome-card p {
+  max-width: 760px;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+.client-actions {
+  margin-top: 34px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.claim-summary-card {
+  padding: 34px;
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.summary-header span {
+  color: var(--primary-deep);
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.summary-header small {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.summary-steps {
+  margin-top: 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.summary-steps div {
+  padding: 20px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, var(--yellow-soft), var(--primary-soft));
+}
+
+.summary-steps div:nth-child(2) {
+  background: linear-gradient(135deg, #7c4dff, #8f6bf7);
+}
+
+.summary-steps div:nth-child(2) strong,
+.summary-steps div:nth-child(2) span {
+  color: #ffffff;
+}
+
+.summary-steps div:nth-child(3) {
+  background: linear-gradient(135deg, var(--pink-soft), var(--lavender-soft));
+}
+
+.summary-steps strong {
+  display: block;
+  color: var(--primary-deep);
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.summary-steps span {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* TITLES */
+
+.section-title {
+  max-width: 900px;
+  margin-bottom: 64px;
+}
+
+.section-title.center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: 12px;
+  color: var(--primary);
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.section-title h2,
+.support-box h2 {
+  color: var(--primary-deep);
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1.08;
+  font-weight: 900;
+  letter-spacing: -0.055em;
+}
+
+.section-title p,
+.support-box p {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+/* BENEFITS */
+
+.benefits-section {
+  padding: 35px 0 80px;
+  background: #f8f5fb;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.benefit-card {
+  padding: 26px;
+  border-radius: 28px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  transition: 0.28s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow);
+}
+
+.benefit-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.benefit-card h3 {
+  color: var(--primary-deep);
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.benefit-card p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* CLAIM TYPES */
+
+.claim-types-section {
+  padding: 95px 0;
+  background: #ffffff;
+}
+
+.claim-types-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.claim-type-card {
+  overflow: hidden;
+  border-radius: 32px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  transition: 0.28s ease;
+}
+
+.claim-type-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow);
+}
+
+.card-media {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+  background: var(--primary-soft);
+}
+
+.card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 20%, rgba(22, 0, 47, 0.52));
+}
+
+.card-media > span {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  z-index: 2;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: var(--primary);
+  font-size: 23px;
+  font-weight: 900;
+  box-shadow: var(--shadow-purple);
+}
+
+.claim-auto .card-media > span {
+  background: #38bdf8;
+}
+
+.claim-sante .card-media > span {
+  background: #22c55e;
+}
+
+.claim-habitation .card-media > span {
+  background: #f5b43a;
+}
+
+.card-body {
+  padding: 28px;
+}
+
+.card-subtitle {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.card-body h3 {
+  margin-top: 8px;
+  color: var(--primary-deep);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.card-body p {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.card-action {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 22px;
+  padding: 0 18px;
+  border-radius: 16px;
+  color: var(--primary);
+  background: var(--primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.22s ease;
+}
+
+.card-action:hover {
+  color: #ffffff;
+  background: var(--primary);
+}
+
+.card-action span {
+  font-size: 20px;
+}
+
+/* PROCESS */
+
+.process-section {
+  padding: 100px 0;
+  background:
+    radial-gradient(circle at 78% 12%, rgba(231, 163, 203, 0.30), transparent 28%),
+    linear-gradient(180deg, #ffffff, #f8f5fb);
+}
+
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.process-card {
+  padding: 30px;
+  border-radius: 30px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  transition: 0.28s ease;
+}
+
+.process-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow);
+}
+
+.process-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.process-number {
+  color: var(--primary);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.process-icon {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+.process-icon::before {
+  content: "";
+  position: absolute;
+  inset: 15px;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.step-upload .process-icon {
+  background: #38bdf8;
+}
+
+.step-follow .process-icon {
+  background: #22c55e;
+}
+
+.process-card h3 {
+  margin-top: 24px;
+  color: var(--primary-deep);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.process-card p {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* SUPPORT */
+
+.support-section {
+  padding: 100px 0;
+  background:
+    radial-gradient(circle at 18% 35%, rgba(255, 242, 168, 0.58), transparent 30%),
+    radial-gradient(circle at 82% 25%, rgba(231, 163, 203, 0.35), transparent 28%),
+    linear-gradient(135deg, #ffffff, #eee7fb);
+}
+
+.support-box {
+  padding: 44px;
+  border-radius: 36px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+}
+
+.support-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1180px) {
+  .header-inner {
+    gap: 24px;
+  }
+
+  .nav-links {
+    gap: 18px;
+  }
+
+  .nav-links a {
+    font-size: 15px;
+  }
+
+  .claims-hero-layout,
+  .support-box {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .benefits-grid,
+  .claim-types-grid,
+  .process-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .support-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 850px) {
+  .claims-home-page {
+    padding-top: 180px;
+  }
+
+  .container {
+    width: calc(100% - 28px);
+  }
+
+  .insur-header {
+    height: auto;
+  }
+
+  .header-inner {
+    height: auto;
+    min-height: 78px;
+    padding: 14px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .brand {
+    min-width: auto;
+  }
+
+  .login-btn {
+    width: 100%;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .claims-hero,
+  .claim-types-section,
+  .process-section,
+  .support-section {
+    padding: 70px 0;
+  }
+
+  .client-profile {
+    flex-direction: column;
+  }
+
+  .benefits-grid,
+  .claim-types-grid,
+  .process-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .client-actions,
+  .support-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn,
+  .support-actions .btn {
+    width: 100%;
+  }
+
+  .claims-welcome-card,
+  .claim-summary-card,
+  .support-box {
+    padding: 26px;
+    border-radius: 26px;
+  }
+}
+
+@media (max-width: 560px) {
+  .brand-text strong {
+    font-size: 24px;
+  }
+
+  .insurflow-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  .client-avatar {
+    width: 76px;
+    height: 76px;
+    border-radius: 22px;
+    font-size: 24px;
+  }
+
+  .claims-welcome-card h1,
+  .section-title h2,
+  .support-box h2 {
+    font-size: 34px;
+  }
+
+  .claims-welcome-card p,
+  .section-title p,
+  .support-box p {
+    font-size: 17px;
+  }
+
+  .card-media {
+    height: 210px;
+  }
+
+  .card-body,
+  .process-card {
+    padding: 22px;
+  }
+
+  .summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+.claim-travel .card-media > span {
+  background: #0ea5e9;
+}
+
+.claim-life .card-media > span {
+  background: #ec4899;
+}

@@ -1,0 +1,368 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:host {
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-light: #eff6ff;
+
+  --success: #16a34a;
+  --success-bg: #ecfdf5;
+
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+
+  --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+
+  display: block;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.admin-layout {
+  min-height: 100vh;
+  display: flex;
+  background: var(--bg);
+}
+
+.admin-main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px;
+}
+
+.admin-content {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ALERTS */
+
+.alert {
+  padding: 15px 18px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid var(--line);
+}
+
+.alert.success {
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: rgba(22, 163, 74, 0.25);
+}
+
+.alert.error {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
+/* LOADING */
+
+.loading-state {
+  min-height: 160px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* GRID */
+
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+/* CARD */
+
+.config-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: 0.2s ease;
+}
+
+.config-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12);
+}
+
+/* CARD TOP */
+
+.card-top {
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 58px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #ffffff, #f9fbff);
+}
+
+.agent-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.agent-copy h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.agent-copy p {
+  margin: 7px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.threshold-badge {
+  min-width: 82px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* BODY */
+
+.card-body {
+  padding: 22px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.range-row {
+  display: grid;
+  grid-template-columns: 1fr 105px;
+  align-items: center;
+  gap: 14px;
+}
+
+/* RANGE */
+
+.range-input {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+/* important: no blue after selected value */
+.range-input::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.range-input::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  margin-top: -7px;
+  border-radius: 50%;
+  border: 3px solid white;
+  background: var(--primary);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  -webkit-appearance: none;
+  transition: transform 0.2s ease;
+}
+
+.range-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.range-input::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.range-input::-moz-range-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--primary);
+}
+
+.range-input::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid white;
+  background: var(--primary);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+/* NUMBER INPUT */
+
+.number-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  outline: none;
+  background: white;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.number-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.range-helper {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.range-helper span {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+}
+
+/* FOOTER */
+
+.card-footer {
+  padding: 0 22px 22px;
+}
+
+.save-btn {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 14px;
+  background: var(--primary);
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  transition: 0.2s ease;
+}
+
+.save-btn:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1200px) {
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-main {
+    padding: 16px;
+  }
+
+  .card-top {
+    grid-template-columns: 52px 1fr;
+  }
+
+  .threshold-badge {
+    grid-column: 1 / -1;
+    width: fit-content;
+  }
+
+  .range-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-main {
+    padding: 12px;
+  }
+
+  .config-card {
+    border-radius: 18px;
+  }
+
+  .card-top,
+  .card-body,
+  .card-footer {
+    padding: 18px;
+  }
+
+  .agent-copy h2 {
+    font-size: 18px;
+  }
+
+  .agent-copy p {
+    font-size: 13px;
+  }
+}

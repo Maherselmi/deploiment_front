@@ -1,0 +1,263 @@
+<div class="feedback-page">
+  <div class="page-glow glow-left"></div>
+  <div class="page-glow glow-right"></div>
+  <div class="page-mesh"></div>
+
+  <!-- TOPBAR -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" routerLink="/">
+        <span class="brand-symbol">
+          <span class="brand-shape shape-back"></span>
+          <span class="brand-shape shape-front"></span>
+        </span>
+
+        <span class="brand-copy">
+          <span class="brand-main">InSurFlow</span>
+          <span class="brand-sub">expert feedback</span>
+        </span>
+      </a>
+
+      <nav class="main-nav">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          [class.active]="isActiveNav(item.route)"
+        >
+          {{ item.label }}
+        </a>
+      </nav>
+
+      <div class="header-user">
+        <div class="expert-avatar">
+          {{ expertName ? expertName.charAt(0).toUpperCase() : 'E' }}
+        </div>
+
+        <div class="header-user-text">
+          <strong>{{ expertName }}</strong>
+          <span>{{ expertEmail }}</span>
+        </div>
+
+        <button class="logout-btn" type="button" (click)="logout()">
+          Déconnexion
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="feedback-main">
+    <div class="container">
+      <!-- HERO -->
+      <section class="hero-shell">
+        <div class="hero-copy">
+          <div class="hero-badge">Feedback expert InSurFlow</div>
+
+          <h1>
+            Analysez les dossiers
+            <span>et améliorez les décisions IA.</span>
+          </h1>
+
+          <p class="hero-text">
+            Sélectionnez un dossier existant pour remplir le feedback expert,
+            corriger les résultats automatiques et renforcer la qualité du
+            traitement des sinistres.
+          </p>
+
+          <div class="hero-actions">
+            <button
+              class="btn btn-primary"
+              type="button"
+              routerLink="/HumanValidationList"
+            >
+              Validation humaine
+            </button>
+
+            <button
+              class="btn btn-secondary"
+              type="button"
+              (click)="loadClaims()"
+            >
+              Actualiser la liste
+            </button>
+          </div>
+
+          <div class="hero-points">
+            <div class="hero-point">
+              <span class="hero-point-bullet"></span>
+              <span>Correction métier</span>
+            </div>
+
+            <div class="hero-point">
+              <span class="hero-point-bullet"></span>
+              <span>Apprentissage IA</span>
+            </div>
+
+            <div class="hero-point">
+              <span class="hero-point-bullet"></span>
+              <span>Suivi expert centralisé</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-side">
+          <div class="hero-panel">
+            <div class="ai-orb">AI</div>
+
+            <div class="hero-note">
+              <span>Vue rapide</span>
+              <h3>Priorité actuelle</h3>
+              <p>{{ reviewLabel }}</p>
+            </div>
+
+            <div class="hero-mini-grid">
+              <article class="hero-mini-card">
+                <strong>{{ totalClaims }}</strong>
+                <span>Dossiers totaux</span>
+              </article>
+
+              <article class="hero-mini-card">
+                <strong>{{ pendingClaims }}</strong>
+                <span>En attente expert</span>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STATS -->
+      <section class="stats-row" *ngIf="!loading">
+        <article class="stat-card">
+          <span class="stat-icon total"></span>
+
+          <div>
+            <span class="stat-label">Total dossiers</span>
+            <strong>{{ totalClaims }}</strong>
+            <p>Tous les dossiers disponibles </p>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon pending"></span>
+
+          <div>
+            <span class="stat-label">Validation humaine</span>
+            <strong>{{ pendingClaims }}</strong>
+            <p>Dossiers nécessitant une décision ou une revue experte.</p>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon processed"></span>
+
+          <div>
+            <span class="stat-label">Déjà exploitables</span>
+            <strong>{{ processedClaims }}</strong>
+            <p>Dossiers déjà traités, mais encore ouverts au feedback métier.</p>
+          </div>
+        </article>
+
+        <article class="stat-card stat-highlight">
+          <span class="stat-icon reliability"></span>
+
+          <div>
+            <span class="stat-label">Objectif</span>
+            <strong>Fiabilité</strong>
+            <p>Améliorer la qualité des décisions IA avec vos retours experts.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- STATES -->
+      <div *ngIf="loading" class="state-card loading">
+        <div class="loader"></div>
+        <p>Chargement des dossiers...</p>
+      </div>
+
+      <div *ngIf="errorMessage" class="state-card error">
+        {{ errorMessage }}
+      </div>
+
+      <!-- CLAIMS LIST -->
+      <section class="claims-section" *ngIf="!loading && claims.length > 0">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Liste expert</p>
+            <h2>Dossiers disponibles </h2>
+          </div>
+        </div>
+
+        <div class="claims-grid">
+          <article class="claim-card" *ngFor="let claim of claims">
+            <div class="claim-top">
+              <div class="claim-id">
+                #{{ claim.id }}
+              </div>
+
+              <div class="claim-title-wrap">
+                <span>{{ claim.policy?.type || 'Sinistre' }}</span>
+                <h3>Dossier #{{ claim.id }}</h3>
+                <p>{{ claim.description || 'Description non renseignée' }}</p>
+              </div>
+
+              <span
+                class="status-badge"
+                [ngClass]="getStatusClass(claim.status)"
+              >
+                {{ getStatusLabel(claim.status) }}
+              </span>
+            </div>
+
+            <div class="claim-body">
+              <div class="info-row">
+                <span class="label">Client</span>
+                <p>{{ getClientFullName(claim) }}</p>
+              </div>
+
+              <div class="info-row">
+                <span class="label">Police</span>
+                <p>{{ claim.policy?.policyNumber || '-' }}</p>
+              </div>
+
+              <div class="info-row">
+                <span class="label">Type</span>
+                <p>{{ claim.policy?.type || '-' }}</p>
+              </div>
+
+              <div class="info-row">
+                <span class="label">Date incident</span>
+                <p>{{ claim.incidentDate | date:'dd/MM/yyyy' }}</p>
+              </div>
+            </div>
+
+            <div class="claim-actions">
+              <button
+                class="action-btn"
+                type="button"
+                (click)="openFeedback(claim.id)"
+              >
+                <span>
+                  {{ isPendingValidation(claim) ? 'Traiter + feedback expert' : 'Remplir feedback expert' }}
+                </span>
+
+                <strong>→</strong>
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- EMPTY -->
+      <div *ngIf="!loading && claims.length === 0" class="state-card empty">
+        <div class="empty-icon"></div>
+
+        <h3>Aucun dossier disponible</h3>
+
+        <p>
+          Les dossiers apparaîtront ici dès qu’ils seront disponibles pour une
+          revue ou un feedback expert.
+        </p>
+      </div>
+    </div>
+  </main>
+</div>

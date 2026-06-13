@@ -1,0 +1,552 @@
+<div class="assistant-page">
+  <!-- SIDEBAR -->
+  <aside class="assistant-sidebar">
+    <div class="sidebar-brand" (click)="goBackToClientSpace()">
+      <div class="brand-logo">IF</div>
+
+      <div>
+        <strong>InsurFlow</strong>
+        <span>AI Assistant</span>
+      </div>
+    </div>
+
+    <button class="new-chat-btn" type="button" (click)="startNewChat()">
+      <span>+</span>
+      Nouvelle discussion
+    </button>
+
+    <div class="sidebar-section">
+      <div class="section-head">
+        <span>Conversations</span>
+        <b>{{ discussions.length }}</b>
+      </div>
+
+      <div class="discussion-list">
+        <button
+          type="button"
+          class="discussion-item"
+          *ngFor="let discussion of discussions"
+          [class.active]="discussion.id === selectedDiscussionId"
+          (click)="selectDiscussion(discussion.id)"
+        >
+          <span class="discussion-state"></span>
+
+          <span class="discussion-name">
+            {{ discussion.title }}
+          </span>
+
+          <small
+            class="delete-discussion"
+            title="Supprimer"
+            (click)="deleteDiscussion(discussion.id, $event)"
+          >
+            ×
+          </small>
+        </button>
+      </div>
+    </div>
+
+    <div class="client-card">
+      <div class="client-avatar">
+        {{ client?.firstName?.charAt(0) || 'C' }}{{ client?.lastName?.charAt(0) || '' }}
+      </div>
+
+      <div class="client-info">
+        <span>Client connecté</span>
+        <strong>{{ fullName }}</strong>
+      </div>
+
+      <button type="button" (click)="goBackToClientSpace()">
+        Retour espace client
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="assistant-main">
+    <section class="assistant-container">
+      <!-- HEADER -->
+      <header class="assistant-header">
+        <div>
+          <span class="header-label">Assistant intelligent</span>
+          <h1>Gestion des sinistres</h1>
+        </div>
+
+        <div class="header-actions">
+          <div class="online-status">
+            <span></span>
+            En ligne
+          </div>
+
+          <button type="button" class="reset-btn" (click)="clearCurrentDiscussion()">
+            Réinitialiser
+          </button>
+        </div>
+      </header>
+
+      <!-- CHAT CARD -->
+      <section class="chat-card" [class.chat-mode]="messages.length > 1">
+        <!-- WELCOME -->
+        <div class="welcome-state" *ngIf="messages.length <= 1">
+          <div class="welcome-content">
+            <div class="welcome-badge">
+              <span>✦</span>
+              Assistance intelligente
+            </div>
+
+            <h2>
+              Bonjour {{ client?.firstName || '' }}, que souhaitez-vous faire ?
+            </h2>
+
+            <p>
+              Consultez vos contrats, suivez vos dossiers ou déclarez un sinistre
+              avec un parcours guidé simple et rapide.
+            </p>
+
+            <div class="quick-actions">
+              <button
+                type="button"
+                class="quick-action"
+                *ngFor="let action of actions"
+                (click)="sendActionMessage(action)"
+              >
+                <span class="quick-icon">{{ action.icon }}</span>
+
+                <div>
+                  <strong>{{ action.title }}</strong>
+                  <small>{{ action.subtitle }}</small>
+                </div>
+
+                <span class="quick-arrow">→</span>
+              </button>
+            </div>
+          </div>
+
+          <aside class="workflow-card">
+            <div class="workflow-head">
+              <div class="workflow-logo">AI</div>
+
+              <div>
+                <strong>InsurFlow Assistant</strong>
+                <span>Workflow sinistre intelligent</span>
+              </div>
+            </div>
+
+            <div class="workflow-steps">
+              <div>
+                <b>1</b>
+                <span>Déclaration guidée</span>
+              </div>
+
+              <div>
+                <b>2</b>
+                <span>Analyse contrat</span>
+              </div>
+
+              <div>
+                <b>3</b>
+                <span>Estimation dommages</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- CHAT BODY -->
+        <div
+          class="chat-body"
+          #chatBody
+          *ngIf="messages.length > 1"
+          (scroll)="onChatScroll()"
+        >          <div
+          class="message-row"
+          *ngFor="let message of messages"
+          [class.user]="message.sender === 'user'"
+          [class.bot]="message.sender === 'bot'"
+        >
+          <div class="message-avatar bot-avatar" *ngIf="message.sender === 'bot'">
+            AI
+          </div>
+
+          <div
+            class="message-bubble"
+            [class.rich]="
+                message.kind === 'policies' ||
+                message.kind === 'claims' ||
+                message.kind === 'claim-type-picker' ||
+                message.kind === 'policy-picker' ||
+                message.kind === 'date-picker' ||
+                message.kind === 'confirmation-actions'
+              "
+            [class.result-bubble]="
+                message.kind === 'agent-summary' ||
+                message.kind === 'agent-router' ||
+                message.kind === 'agent-validator' ||
+                message.kind === 'agent-estimator'
+              "
+          >
+            <ng-container [ngSwitch]="message.kind">
+              <!-- CHOIX TYPE SINISTRE -->
+              <div *ngSwitchCase="'claim-type-picker'" class="interactive-block">
+                <div class="block-header">
+                  <div class="block-icon">📝</div>
+
+                  <div>
+                    <strong>Choisissez le type de sinistre</strong>
+                    <small>Sélectionnez une catégorie pour continuer.</small>
+                  </div>
+                </div>
+
+                <div class="claim-type-grid">
+                  <button
+                    type="button"
+                    class="claim-type-card"
+                    *ngFor="let option of message.claimTypeOptions"
+                    [disabled]="chatbotLoading"
+                    (click)="selectClaimType(option)"
+                  >
+                    <span>{{ option.icon }}</span>
+
+                    <div>
+                      <strong>{{ option.label }}</strong>
+                      <small>{{ option.description }}</small>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- CHOIX POLICE -->
+              <div *ngSwitchCase="'policy-picker'" class="interactive-block">
+                <div class="block-header">
+                  <div class="block-icon">📄</div>
+
+                  <div>
+                    <strong>Sélectionnez la police concernée</strong>
+                    <small>Choisissez le contrat lié à ce sinistre.</small>
+                  </div>
+                </div>
+
+                <div class="policy-list">
+                  <button
+                    type="button"
+                    class="policy-option"
+                    *ngFor="let policy of message.policyOptions"
+                    [disabled]="chatbotLoading"
+                    (click)="selectPolicy(policy)"
+                  >
+                    <div>
+                      <span>ID {{ policy.id }}</span>
+                      <strong>{{ policy.number }}</strong>
+                      <small>{{ policy.type }}</small>
+                    </div>
+
+                    <b>→</b>
+                  </button>
+                </div>
+              </div>
+
+              <!-- DATE -->
+              <div *ngSwitchCase="'date-picker'" class="interactive-block">
+                <div class="block-header">
+                  <div class="block-icon">📅</div>
+
+                  <div>
+                    <strong>Date de l’incident</strong>
+                    <small>Choisissez la date exacte du sinistre.</small>
+                  </div>
+                </div>
+
+                <div class="date-box">
+                  <label>
+                    Date de l’incident
+
+                    <input
+                      type="date"
+                      [(ngModel)]="message.dateValue"
+                      [max]="todayIso"
+                      [disabled]="chatbotLoading"
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    [disabled]="!message.dateValue || chatbotLoading"
+                    (click)="sendSelectedDate(message)"
+                  >
+                    Continuer
+                  </button>
+                </div>
+              </div>
+
+              <!-- CONFIRMATION -->
+              <div *ngSwitchCase="'confirmation-actions'" class="interactive-block">
+                <div class="block-header">
+                  <div class="block-icon">✅</div>
+
+                  <div>
+                    <strong>Validation de la déclaration</strong>
+                    <small>Vérifiez les informations avant l’envoi.</small>
+                  </div>
+                </div>
+
+                <p class="confirmation-summary">{{ message.text }}</p>
+
+                <div class="confirm-actions">
+                  <button
+                    type="button"
+                    class="primary-btn"
+                    [disabled]="chatbotLoading"
+                    (click)="confirmDeclaration(true)"
+                  >
+                    Oui, valider
+                  </button>
+
+                  <button
+                    type="button"
+                    class="secondary-btn"
+                    [disabled]="chatbotLoading"
+                    (click)="confirmDeclaration(false)"
+                  >
+                    Non, annuler
+                  </button>
+                </div>
+              </div>
+
+              <!-- POLICES -->
+              <div *ngSwitchCase="'policies'" class="rich-block">
+                <div class="block-header">
+                  <div class="block-icon">📄</div>
+
+                  <div>
+                    <strong>Vos polices actives</strong>
+                    <small>{{ message.policies?.length || 0 }} contrat(s) trouvé(s)</small>
+                  </div>
+                </div>
+
+                <div class="cards-list">
+                  <article
+                    class="data-card"
+                    *ngFor="let policy of message.policies"
+                  >
+                    <div class="data-card-top">
+                      <span>{{ policy.type }}</span>
+                      <b>ID {{ policy.id }}</b>
+                    </div>
+
+                    <h3>{{ policy.number }}</h3>
+
+                    <div class="data-meta">
+                      <p *ngIf="policy.formule">
+                        Formule
+                        <strong>{{ policy.formule }}</strong>
+                      </p>
+
+                      <p *ngIf="policy.endDate">
+                        Date fin
+                        <strong>{{ policy.endDate }}</strong>
+                      </p>
+                    </div>
+                  </article>
+                </div>
+              </div>
+
+              <!-- SINISTRES -->
+              <div *ngSwitchCase="'claims'" class="rich-block">
+                <div class="block-header">
+                  <div class="block-icon">🛡️</div>
+
+                  <div>
+                    <strong>Vos dossiers de sinistre</strong>
+                    <small>{{ message.claims?.length || 0 }} dossier(s) trouvé(s)</small>
+                  </div>
+                </div>
+
+                <div class="cards-list">
+                  <article
+                    class="data-card"
+                    *ngFor="let claim of message.claims"
+                  >
+                    <div class="data-card-top">
+                        <span
+                          class="status-pill"
+                          [ngClass]="getClaimStatusClass(claim.status)"
+                        >
+                          {{ getClaimStatusLabel(claim.status) }}
+                        </span>
+
+                      <b>Dossier #{{ claim.id }}</b>
+                    </div>
+
+                    <div class="data-meta">
+                      <p *ngIf="claim.incidentDate">
+                        Date incident
+                        <strong>{{ claim.incidentDate }}</strong>
+                      </p>
+
+                      <p *ngIf="claim.policyNumber">
+                        Police
+                        <strong>{{ claim.policyNumber }}</strong>
+                      </p>
+                    </div>
+                  </article>
+                </div>
+              </div>
+
+              <!-- RESULTAT ANALYSE -->
+              <p *ngSwitchCase="'agent-summary'" class="agent-loading-text">
+                <span class="agent-spinner"></span>
+                {{ message.text }}
+              </p>
+
+              <!-- AGENT ROUTEUR -->
+              <div *ngSwitchCase="'agent-router'" class="agent-block agent-block--router">
+                <div class="agent-block-header">
+                  <div class="agent-block-icon">🔀</div>
+                  <div class="agent-block-title">
+                    <strong>Agent Routeur</strong>
+                    <small>Détection & classification du sinistre</small>
+                  </div>
+                  <span class="agent-block-badge agent-block-badge--router">Routage</span>
+                </div>
+                <div class="agent-block-body">
+                  <p *ngIf="message.agentStatus === 'loading'" class="agent-loading-text">
+                    <span class="agent-spinner"></span>Analyse en cours...
+                  </p>
+                  <p *ngIf="message.agentStatus !== 'loading'" class="agent-text">{{ message.text }}</p>
+                </div>
+              </div>
+
+              <!-- AGENT VALIDATEUR -->
+              <div *ngSwitchCase="'agent-validator'" class="agent-block agent-block--validator">
+                <div class="agent-block-header">
+                  <div class="agent-block-icon">✅</div>
+                  <div class="agent-block-title">
+                    <strong>Agent Validateur</strong>
+                    <small>Vérification de la couverture contractuelle</small>
+                  </div>
+                  <span class="agent-block-badge agent-block-badge--validator">Validation</span>
+                </div>
+                <div class="agent-block-body">
+                  <p *ngIf="message.agentStatus === 'loading'" class="agent-loading-text">
+                    <span class="agent-spinner"></span>Validation en cours...
+                  </p>
+                  <p *ngIf="message.agentStatus !== 'loading'" class="agent-text">{{ message.text }}</p>
+                </div>
+              </div>
+
+              <!-- AGENT ESTIMATEUR -->
+              <div *ngSwitchCase="'agent-estimator'" class="agent-block agent-block--estimator">
+                <div class="agent-block-header">
+                  <div class="agent-block-icon">💰</div>
+                  <div class="agent-block-title">
+                    <strong>Agent Estimateur</strong>
+                    <small>Évaluation des dommages & indemnisation</small>
+                  </div>
+                  <span class="agent-block-badge agent-block-badge--estimator">Estimation</span>
+                </div>
+                <div class="agent-block-body">
+                  <p *ngIf="message.agentStatus === 'loading'" class="agent-loading-text">
+                    <span class="agent-spinner"></span>Estimation en cours...
+                  </p>
+                  <p *ngIf="message.agentStatus !== 'loading'" class="agent-text">{{ message.text }}</p>
+                </div>
+              </div>
+
+              <!-- TEXTE SIMPLE -->
+              <p *ngSwitchDefault>
+                {{ message.text }}
+              </p>
+            </ng-container>
+          </div>
+
+          <div class="message-avatar user-avatar" *ngIf="message.sender === 'user'">
+            {{ client?.firstName?.charAt(0) || 'C' }}
+          </div>
+        </div>
+
+          <div class="message-row bot" *ngIf="chatbotLoading">
+            <div class="message-avatar bot-avatar">AI</div>
+
+            <div class="typing-bubble">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- UPLOAD -->
+        <div class="upload-panel" *ngIf="needsFileUpload">
+          <div class="upload-info">
+            <strong>Documents justificatifs</strong>
+            <p>Ajoutez des photos, PDF ou documents liés au sinistre.</p>
+          </div>
+
+          <label class="upload-button">
+            <span>📎</span>
+            Joindre
+
+            <input
+              type="file"
+              multiple
+              accept="image/*,.pdf,.doc,.docx"
+              (change)="onFilesSelected($event)"
+            />
+          </label>
+
+          <div class="selected-files" *ngIf="selectedFiles.length > 0">
+            <div class="file-chip" *ngFor="let file of selectedFiles; let i = index">
+              <span>{{ file.name }}</span>
+
+              <button
+                type="button"
+                title="Retirer"
+                (click)="removeSelectedFile(i)"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+
+          <div class="upload-actions">
+            <button
+              type="button"
+              class="primary-btn"
+              [disabled]="!selectedFiles.length || chatbotLoading"
+              (click)="sendClaimDocuments()"
+            >
+              Envoyer les documents
+            </button>
+
+            <button
+              type="button"
+              class="secondary-btn"
+              [disabled]="chatbotLoading"
+              (click)="continueWithoutDocuments()"
+            >
+              Continuer sans document
+            </button>
+          </div>
+        </div>
+
+        <!-- INPUT -->
+        <form class="chat-composer" (ngSubmit)="sendMessage()">
+          <input
+            type="text"
+            name="chatInput"
+            [(ngModel)]="chatInput"
+            [placeholder]="inputPlaceholder"
+            autocomplete="off"
+          />
+
+          <button
+            type="submit"
+            [disabled]="chatbotLoading || !chatInput.trim()"
+            title="Envoyer"
+          >
+            ↑
+          </button>
+        </form>
+      </section>
+    </section>
+  </main>
+</div>

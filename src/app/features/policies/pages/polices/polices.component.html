@@ -1,0 +1,272 @@
+<main class="policies-page">
+  <header class="insur-header">
+    <div class="container header-inner">
+      <a class="brand" routerLink="/Client_Space">
+        <span class="insurflow-logo"></span>
+        <span class="brand-text">
+          <strong>InSurFlow</strong>
+          <small>MES CONTRATS</small>
+        </span>
+      </a>
+
+      <nav class="nav-links">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          [class.active]="isActiveNav(item.route)"
+        >
+          {{ item.label }}
+        </a>
+      </nav>
+
+      <button class="login-btn" type="button" (click)="logout()">
+        Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <section class="policies-hero">
+    <div class="container policies-hero-layout">
+      <div class="policies-welcome-card">
+        <span class="client-label">Portefeuille assurance</span>
+        <h1>Mes contrats d’assurance</h1>
+        <p>
+          Consultez vos polices, vérifiez vos garanties, suivez les échéances
+          et retrouvez les informations essentielles de vos contrats.
+        </p>
+
+        <div class="client-actions">
+          <button class="btn btn-primary" type="button" (click)="goToHome()">
+            Retour accueil
+          </button>
+
+          <button class="btn btn-outline" type="button" (click)="goToDecisions()">
+            Mes dossiers
+          </button>
+        </div>
+      </div>
+
+      <div class="client-summary-card">
+        <div class="summary-header">
+          <span>Résumé contrats</span>
+          <small>Mis à jour aujourd’hui</small>
+        </div>
+
+        <div class="summary-grid">
+          <div>
+            <strong>{{ policies.length }}</strong>
+            <span>Total contrats</span>
+          </div>
+
+          <div>
+            <strong>{{ getActiveCount() }}</strong>
+            <span>Contrats actifs</span>
+          </div>
+
+          <div>
+            <strong>{{ getExpiredCount() }}</strong>
+            <span>Contrats expirés</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="filters-section">
+    <div class="container">
+      <div class="filters-card">
+        <div class="search-box">
+          <span class="search-icon"></span>
+
+          <input
+            type="text"
+            name="searchTerm"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Rechercher par numéro, type, formule, code produit..."
+          />
+        </div>
+
+        <div class="filter-tabs">
+          <button
+            type="button"
+            [class.active]="selectedType === 'TOUS'"
+            (click)="onTypeChange('TOUS')"
+          >
+            Tous
+          </button>
+
+          <button
+            type="button"
+            [class.active]="selectedType === 'AUTO'"
+            (click)="onTypeChange('AUTO')"
+          >
+            Auto
+          </button>
+
+          <button
+            type="button"
+            [class.active]="selectedType === 'SANTE'"
+            (click)="onTypeChange('SANTE')"
+          >
+            Santé
+          </button>
+
+          <button
+            type="button"
+            [class.active]="selectedType === 'HABITATION'"
+            (click)="onTypeChange('HABITATION')"
+          >
+            Habitation
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="policies-content">
+    <div class="container">
+      <div class="state-box loading" *ngIf="loading">
+        Chargement de vos polices...
+      </div>
+
+      <div class="state-box error" *ngIf="!loading && errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div
+        class="state-box empty"
+        *ngIf="!loading && !errorMessage && filteredPolicies.length === 0"
+      >
+        Aucun contrat ne correspond à votre recherche.
+      </div>
+
+      <div
+        class="policies-grid"
+        *ngIf="!loading && !errorMessage && filteredPolicies.length"
+      >
+        <article
+          class="policy-card"
+          *ngFor="let policy of filteredPolicies"
+          [ngClass]="[getTypeClass(policy.type), isActive(policy) ? 'is-active' : 'is-expired']"
+        >
+          <div class="policy-card-header">
+            <div class="policy-icon">
+              <span *ngIf="getTypeLabel(policy.type) === 'AUTO'">🚗</span>
+              <span *ngIf="getTypeLabel(policy.type) === 'SANTE'">💚</span>
+              <span *ngIf="getTypeLabel(policy.type) === 'HABITATION'">🏠</span>
+              <span
+                *ngIf="
+                  getTypeLabel(policy.type) !== 'AUTO' &&
+                  getTypeLabel(policy.type) !== 'SANTE' &&
+                  getTypeLabel(policy.type) !== 'HABITATION'
+                "
+              >
+                📄
+              </span>
+            </div>
+
+            <div class="policy-title">
+              <span>{{ getTypeLabel(policy.type) }}</span>
+              <h2>
+                {{ policy.type || 'Contrat' }}
+                <ng-container *ngIf="policy.formule">
+                  {{ policy.formule }}
+                </ng-container>
+              </h2>
+            </div>
+
+            <span
+              class="status-badge"
+              [class.active]="isActive(policy)"
+              [class.expired]="!isActive(policy)"
+            >
+              {{ isActive(policy) ? 'ACTIF' : 'EXPIRÉ' }}
+            </span>
+          </div>
+
+          <p class="policy-description">
+            {{
+              policy.coverageDetails ||
+              'Contrat d’assurance enregistré dans votre espace InSurFlow.'
+            }}
+          </p>
+
+          <div class="policy-info-grid">
+            <div>
+              <small>N° Police</small>
+              <strong>{{ policy.policyNumber || '-' }}</strong>
+            </div>
+
+            <div>
+              <small>Code produit</small>
+              <strong>{{ policy.productCode || '-' }}</strong>
+            </div>
+
+            <div>
+              <small>Souscripteur</small>
+              <strong>{{ getPolicyHolder(policy) }}</strong>
+            </div>
+          </div>
+
+          <div class="policy-date-grid">
+            <div>
+              <small>Date début</small>
+              <strong>{{ policy.startDate | date:'dd MMM yyyy' }}</strong>
+            </div>
+
+            <div>
+              <small>Date fin</small>
+              <strong>{{ policy.endDate | date:'dd MMM yyyy' }}</strong>
+            </div>
+
+            <div>
+              <small>Jours restants</small>
+              <strong>
+                <ng-container *ngIf="getRemainingDays(policy) > 0; else expiredText">
+                  {{ getRemainingDays(policy) }} jour(s)
+                </ng-container>
+
+                <ng-template #expiredText>
+                  Expiré
+                </ng-template>
+              </strong>
+            </div>
+          </div>
+
+          <button
+            class="details-btn"
+            type="button"
+            (click)="toggleDetails(policy.id)"
+          >
+            {{ isExpanded(policy.id) ? 'Masquer les détails' : 'Voir les détails' }}
+          </button>
+
+          <div class="expanded-box" *ngIf="isExpanded(policy.id)">
+            <div>
+              <small>Formule</small>
+              <strong>{{ policy.formule || 'Non définie' }}</strong>
+            </div>
+
+            <div>
+              <small>Type</small>
+              <strong>{{ getTypeLabel(policy.type) }}</strong>
+            </div>
+
+            <div>
+              <small>Garanties</small>
+              <p>
+                {{ policy.coverageDetails || 'Aucun détail de couverture disponible.' }}
+              </p>
+            </div>
+
+            <div>
+              <small>Client</small>
+              <strong>{{ getPolicyHolder(policy) }}</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>

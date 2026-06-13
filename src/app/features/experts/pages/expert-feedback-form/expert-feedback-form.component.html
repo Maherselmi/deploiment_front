@@ -1,0 +1,577 @@
+<div class="expert-page">
+  <header class="expert-header">
+    <div class="layout header-content">
+      <a class="brand" routerLink="/">
+        <span class="brand-mark">IF</span>
+        <span>
+          <strong>InSurFlow</strong>
+          <small>Expert Review</small>
+        </span>
+      </a>
+
+      <nav class="nav">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          [class.active]="isActiveNav(item.route)"
+        >
+          {{ item.label }}
+        </a>
+      </nav>
+
+      <div class="header-user">
+        <div class="expert-avatar">
+          {{ expertName ? expertName.charAt(0).toUpperCase() : 'E' }}
+        </div>
+
+        <div class="header-user-text">
+          <strong>{{ expertName }}</strong>
+          <span>{{ expertEmail }}</span>
+        </div>
+
+        <button class="logout-btn" type="button" (click)="logout()">
+          Déconnexion
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="expert-main">
+    <div class="layout">
+      <section class="loading-card" *ngIf="loading">
+        <div class="loader"></div>
+        <p>Chargement du dossier...</p>
+      </section>
+
+      <ng-container *ngIf="!loading && claim">
+        <section class="case-banner">
+          <div>
+            <span class="eyebrow">Analyse expert</span>
+            <h1>Dossier #{{ claim.id }}</h1>
+            <p>
+              Vérification des informations du sinistre, contrôle des résultats IA
+              et validation finale du dossier.
+            </p>
+          </div>
+
+          <div class="case-status">
+            <span>Statut actuel</span>
+            <strong>{{ getStatusLabel(claim.status) }}</strong>
+          </div>
+        </section>
+
+        <div class="alert success" *ngIf="successMessage">{{ successMessage }}</div>
+        <div class="alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        <section class="case-overview">
+          <article>
+            <span>Référence dossier</span>
+            <strong>#{{ claim.id }}</strong>
+          </article>
+
+          <article>
+            <span>Police</span>
+            <strong>{{ claim.policy?.policyNumber || '-' }}</strong>
+          </article>
+
+          <article>
+            <span>Type police</span>
+            <strong>{{ claim.policy?.type || '-' }}</strong>
+          </article>
+
+          <article>
+            <span>Date incident</span>
+            <strong>{{ claim.incidentDate || '-' }}</strong>
+          </article>
+        </section>
+
+        <section class="review-layout">
+          <aside class="case-sidebar">
+            <div class="panel">
+              <div class="panel-head">
+                <span>Dossier</span>
+                <h2>Informations générales</h2>
+              </div>
+
+              <dl class="details-list">
+                <div>
+                  <dt>Description</dt>
+                  <dd>{{ claim.description || 'Description non renseignée' }}</dd>
+                </div>
+
+                <div>
+                  <dt>Statut</dt>
+                  <dd>
+                    <span class="status-badge" [ngClass]="getStatusClass(claim.status)">
+                      {{ getStatusLabel(claim.status) }}
+                    </span>
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>Date incident</dt>
+                  <dd>{{ claim.incidentDate || '-' }}</dd>
+                </div>
+
+                <div>
+                  <dt>Police</dt>
+                  <dd>{{ claim.policy?.policyNumber || '-' }}</dd>
+                </div>
+
+                <div>
+                  <dt>Type police</dt>
+                  <dd>{{ claim.policy?.type || '-' }}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="panel" *ngIf="reviewData">
+              <div class="panel-head">
+                <span>Rapport IA</span>
+                <h2>Analyse automatique</h2>
+              </div>
+
+              <pre class="report-box">{{ reviewData.aiReport }}</pre>
+            </div>
+
+            <div
+              class="panel"
+              *ngIf="shouldShowExpertDocuments && claim.documents?.length"
+            >
+              <div class="panel-head">
+                <span>Justificatifs</span>
+                <h2>Documents du dossier</h2>
+              </div>
+
+              <div class="documents-section" *ngIf="imageDocuments.length">
+                <h3>Images</h3>
+
+                <article class="document-card" *ngFor="let doc of imageDocuments">
+                  <div class="document-preview image-preview">
+                    <img [src]="buildFileUrl(doc.filePath)" [alt]="doc.fileName" />
+                  </div>
+
+                  <div class="document-info">
+                    <strong>{{ doc.fileName }}</strong>
+                    <small>{{ doc.fileType }}</small>
+                  </div>
+
+                  <a [href]="buildFileUrl(doc.filePath)" target="_blank" rel="noopener noreferrer">
+                    Ouvrir
+                  </a>
+                </article>
+              </div>
+
+              <div class="documents-section" *ngIf="pdfDocuments.length">
+                <h3>PDF</h3>
+
+                <article class="document-card" *ngFor="let doc of pdfDocuments">
+                  <div class="document-preview pdf-preview">
+                    <iframe [src]="getSafePdfUrl(doc.filePath)" title="PDF du dossier"></iframe>
+                  </div>
+
+                  <div class="document-info">
+                    <strong>{{ doc.fileName }}</strong>
+                    <small>{{ doc.fileType }}</small>
+                  </div>
+
+                  <a [href]="buildFileUrl(doc.filePath)" target="_blank" rel="noopener noreferrer">
+                    Ouvrir PDF
+                  </a>
+                </article>
+              </div>
+            </div>
+          </aside>
+
+          <section class="review-content">
+            <form class="expert-form" (ngSubmit)="submit()">
+              <div class="form-section">
+                <div class="form-title">
+                  <span>01</span>
+                  <div>
+                    <h2>Évaluation expert</h2>
+                    <p>Informations générales du feedback.</p>
+                  </div>
+                </div>
+
+                <div class="form-grid one-col">
+                  <div class="field">
+                    <label>Expert</label>
+                    <input
+                      [(ngModel)]="feedbackForm.reviewedBy"
+                      name="reviewedBy"
+                      placeholder="Nom ou email expert"
+                    />
+                  </div>
+
+                  <div class="field">
+                    <label>Satisfaction / qualité du résultat IA</label>
+
+                    <div class="rating-list">
+                      <button
+                        type="button"
+                        [class.selected]="feedbackForm.satisfactionScore === 1"
+                        (click)="feedbackForm.satisfactionScore = 1"
+                      >
+                        <strong>1</strong>
+                        <span>Très mauvais</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        [class.selected]="feedbackForm.satisfactionScore === 2"
+                        (click)="feedbackForm.satisfactionScore = 2"
+                      >
+                        <strong>2</strong>
+                        <span>Mauvais</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        [class.selected]="feedbackForm.satisfactionScore === 3"
+                        (click)="feedbackForm.satisfactionScore = 3"
+                      >
+                        <strong>3</strong>
+                        <span>Moyen</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        [class.selected]="feedbackForm.satisfactionScore === 4"
+                        (click)="feedbackForm.satisfactionScore = 4"
+                      >
+                        <strong>4</strong>
+                        <span>Bon</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        [class.selected]="feedbackForm.satisfactionScore === 5"
+                        (click)="feedbackForm.satisfactionScore = 5"
+                      >
+                        <strong>5</strong>
+                        <span>Excellent</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <label class="checkbox-line">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="feedbackForm.useForLearning"
+                      name="useForLearning"
+                    />
+                    <span>Utiliser ce dossier pour le learning des agents</span>
+                  </label>
+
+                  <div class="field">
+                    <label>Commentaire global</label>
+                    <textarea
+                      [(ngModel)]="feedbackForm.globalComment"
+                      name="globalComment"
+                      placeholder="Ajouter un commentaire global..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-title">
+                  <span>02</span>
+                  <div>
+                    <h2>Classification du dossier</h2>
+                    <p>Contrôle du résultat de l’agent routeur.</p>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <div class="field">
+                    <label>Type prédit</label>
+                    <input [(ngModel)]="feedbackForm.predictedType" name="predictedType" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label>Confiance</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="1"
+                      [(ngModel)]="feedbackForm.routeurConfidence"
+                      name="routeurConfidence"
+                      readonly
+                    />
+                  </div>
+
+                  <div class="field full" *ngIf="feedbackForm.routeurJustification">
+                    <label>Justification IA</label>
+                    <textarea
+                      [value]="feedbackForm.routeurJustification"
+                      name="routeurJustificationDisplay"
+                      readonly
+                    ></textarea>
+                  </div>
+
+                  <div class="field full">
+                    <label>Le type est correct ?</label>
+                    <div class="choice-row">
+                      <button
+                        type="button"
+                        class="choice yes"
+                        [class.selected]="feedbackForm.routeurCorrect === true"
+                        (click)="feedbackForm.routeurCorrect = true"
+                      >
+                        Oui
+                      </button>
+
+                      <button
+                        type="button"
+                        class="choice no"
+                        [class.selected]="feedbackForm.routeurCorrect === false"
+                        (click)="feedbackForm.routeurCorrect = false"
+                      >
+                        Non
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="field full">
+                    <label>Type final expert</label>
+                    <div class="choice-row wrap">
+                      <button type="button" class="choice" [class.selected]="feedbackForm.finalType === 'AUTO'" (click)="feedbackForm.finalType = 'AUTO'; onRouteurFinalTypeChange()">AUTO</button>
+                      <button type="button" class="choice" [class.selected]="feedbackForm.finalType === 'HABITATION'" (click)="feedbackForm.finalType = 'HABITATION'; onRouteurFinalTypeChange()">HABITATION</button>
+                      <button type="button" class="choice" [class.selected]="feedbackForm.finalType === 'SANTE'" (click)="feedbackForm.finalType = 'SANTE'; onRouteurFinalTypeChange()">SANTE</button>
+                      <button type="button" class="choice" [class.selected]="feedbackForm.finalType === 'VOYAGE'" (click)="feedbackForm.finalType = 'VOYAGE'; onRouteurFinalTypeChange()">VOYAGE</button>
+                      <button type="button" class="choice" [class.selected]="feedbackForm.finalType === 'INCONNU'" (click)="feedbackForm.finalType = 'INCONNU'; onRouteurFinalTypeChange()">INCONNU</button>
+                    </div>
+                  </div>
+
+                  <div class="field full">
+                    <label>Commentaire routeur</label>
+                    <textarea
+                      [(ngModel)]="feedbackForm.routeurComment"
+                      name="routeurComment"
+                      placeholder="Commentaire sur la classification..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-title">
+                  <span>03</span>
+                  <div>
+                    <h2>Validation de la couverture</h2>
+                    <p>Contrôle de la décision de couverture.</p>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <div class="field">
+                    <label>Décision prédite</label>
+                    <input [(ngModel)]="feedbackForm.predictedDecision" name="predictedDecision" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label>Confiance</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="1"
+                      [(ngModel)]="feedbackForm.validationConfidence"
+                      name="validationConfidence"
+                      readonly
+                    />
+                  </div>
+
+                  <div class="field full" *ngIf="feedbackForm.validationJustification">
+                    <label>Justification IA</label>
+                    <textarea
+                      [value]="feedbackForm.validationJustification"
+                      name="validationJustificationDisplay"
+                      readonly
+                    ></textarea>
+                  </div>
+
+                  <div class="field full">
+                    <label>La décision est correcte ?</label>
+                    <div class="choice-row">
+                      <button type="button" class="choice yes" [class.selected]="feedbackForm.validationCorrect === true" (click)="feedbackForm.validationCorrect = true">Oui</button>
+                      <button type="button" class="choice no" [class.selected]="feedbackForm.validationCorrect === false" (click)="feedbackForm.validationCorrect = false">Non</button>
+                    </div>
+                  </div>
+
+                  <div class="field full">
+                    <label>Décision finale expert</label>
+                    <div class="choice-row wrap">
+                      <button type="button" class="choice yes" [class.selected]="feedbackForm.finalDecision === 'COUVERT'" (click)="feedbackForm.finalDecision = 'COUVERT'; onValidationFinalDecisionChange()">COUVERT</button>
+                      <button type="button" class="choice no" [class.selected]="feedbackForm.finalDecision === 'EXCLU'" (click)="feedbackForm.finalDecision = 'EXCLU'; onValidationFinalDecisionChange()">EXCLU</button>
+                      <button type="button" class="choice" [class.selected]="feedbackForm.finalDecision === 'INCONNU'" (click)="feedbackForm.finalDecision = 'INCONNU'; onValidationFinalDecisionChange()">INCONNU</button>
+                    </div>
+                  </div>
+
+                  <div class="field full">
+                    <label>Commentaire validation</label>
+                    <textarea
+                      [(ngModel)]="feedbackForm.validationComment"
+                      name="validationComment"
+                      placeholder="Commentaire sur la couverture..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-title">
+                  <span>04</span>
+                  <div>
+                    <h2>Estimation financière</h2>
+                    <p>Contrôle et correction de l’estimation proposée.</p>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <div class="field">
+                    <label>Min prédit</label>
+                    <input type="number" [(ngModel)]="feedbackForm.predictedEstimationMin" name="predictedEstimationMin" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label>Moyenne prédite</label>
+                    <input type="number" [(ngModel)]="feedbackForm.predictedEstimationMoyenne" name="predictedEstimationMoyenne" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label>Max prédit</label>
+                    <input type="number" [(ngModel)]="feedbackForm.predictedEstimationMax" name="predictedEstimationMax" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label>Confiance</label>
+                    <input type="number" step="0.01" min="0" max="1" [(ngModel)]="feedbackForm.estimateurConfidence" name="estimateurConfidence" readonly />
+                  </div>
+
+                  <div class="field full" *ngIf="feedbackForm.estimateurJustification">
+                    <label>Justification IA</label>
+                    <textarea
+                      [value]="feedbackForm.estimateurJustification"
+                      name="estimateurJustificationDisplay"
+                      readonly
+                    ></textarea>
+                  </div>
+
+                  <div class="field full">
+                    <label>Évaluation expert</label>
+                    <div class="choice-row wrap">
+                      <button type="button" class="choice yes" [class.selected]="feedbackForm.estimateEvaluation === 'CORRECTE'" (click)="feedbackForm.estimateEvaluation = 'CORRECTE'; onEstimateEvaluationChange()">CORRECTE</button>
+                      <button type="button" class="choice warn" [class.selected]="feedbackForm.estimateEvaluation === 'SOUS_ESTIME'" (click)="feedbackForm.estimateEvaluation = 'SOUS_ESTIME'; onEstimateEvaluationChange()">SOUS-ESTIMÉ</button>
+                      <button type="button" class="choice warn" [class.selected]="feedbackForm.estimateEvaluation === 'SUR_ESTIME'" (click)="feedbackForm.estimateEvaluation = 'SUR_ESTIME'; onEstimateEvaluationChange()">SUR-ESTIMÉ</button>
+                      <button type="button" class="choice" [class.selected]="feedbackForm.estimateEvaluation === 'INCERTAINE'" (click)="feedbackForm.estimateEvaluation = 'INCERTAINE'; onEstimateEvaluationChange()">INCERTAINE</button>
+                    </div>
+                  </div>
+
+                  <div class="field full">
+                    <label>L'estimation est correcte ?</label>
+                    <div class="choice-row">
+                      <button type="button" class="choice yes" [class.selected]="feedbackForm.estimateurCorrect === true" (click)="feedbackForm.estimateurCorrect = true">Oui</button>
+                      <button type="button" class="choice no" [class.selected]="feedbackForm.estimateurCorrect === false" (click)="feedbackForm.estimateurCorrect = false">Non</button>
+                    </div>
+                  </div>
+
+                  <div class="field" [class.editable-field]="estimationNeedsCorrection">
+                    <label>Estimation finale min</label>
+                    <input
+                      type="number"
+                      [(ngModel)]="feedbackForm.finalEstimationMin"
+                      name="finalEstimationMin"
+                      [attr.readonly]="estimationNeedsCorrection ? null : ''"
+                    />
+                  </div>
+
+                  <div class="field" [class.editable-field]="estimationNeedsCorrection">
+                    <label>Estimation finale moyenne</label>
+                    <input
+                      type="number"
+                      [(ngModel)]="feedbackForm.finalEstimationMoyenne"
+                      name="finalEstimationMoyenne"
+                      [attr.readonly]="estimationNeedsCorrection ? null : ''"
+                    />
+                  </div>
+
+                  <div class="field" [class.editable-field]="estimationNeedsCorrection">
+                    <label>Estimation finale max</label>
+                    <input
+                      type="number"
+                      [(ngModel)]="feedbackForm.finalEstimationMax"
+                      name="finalEstimationMax"
+                      [attr.readonly]="estimationNeedsCorrection ? null : ''"
+                    />
+                  </div>
+
+                  <div class="field full">
+                    <label>Commentaire estimateur</label>
+                    <textarea
+                      [(ngModel)]="feedbackForm.estimateurComment"
+                      name="estimateurComment"
+                      placeholder="Commentaire sur l'estimation..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="decision-box" *ngIf="isPendingValidation">
+                <div class="form-title">
+                  <span>05</span>
+                  <div>
+                    <h2>Décision finale</h2>
+                    <p>Approuver ou rejeter le dossier après analyse.</p>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label>Commentaire gestionnaire</label>
+                  <textarea
+                    [(ngModel)]="decisionComment"
+                    name="decisionComment"
+                    placeholder="Commentaire pour approbation ou rejet..."
+                  ></textarea>
+                </div>
+
+                <div class="decision-actions">
+                  <button
+                    type="button"
+                    class="btn-decision reject"
+                    (click)="rejectClaim()"
+                    [disabled]="actionLoading"
+                  >
+                    {{ actionLoading && actionType === 'reject' ? 'Rejet...' : 'Rejeter le dossier' }}
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-decision approve"
+                    (click)="approveClaim()"
+                    [disabled]="actionLoading"
+                  >
+                    {{
+                      actionLoading && actionType === 'approve'
+                        ? 'Approbation...'
+                        : estimationNeedsCorrection
+                          ? 'Approuver avec correction'
+                          : 'Approuver le dossier'
+                    }}
+                  </button>
+                </div>
+              </div>
+
+              <button class="submit-btn" type="submit" [disabled]="saving || actionLoading">
+                {{ saving ? 'Enregistrement...' : 'Enregistrer le feedback expert' }}
+              </button>
+            </form>
+          </section>
+        </section>
+      </ng-container>
+    </div>
+  </main>
+</div>

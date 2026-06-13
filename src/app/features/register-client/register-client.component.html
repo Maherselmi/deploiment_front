@@ -1,0 +1,71 @@
+<main class="register-page">
+  <section class="register-card">
+    <a class="brand" routerLink="/">
+      <span class="insurflow-logo"></span>
+      <span class="brand-text">
+        <strong>InSurFlow</strong>
+        <small>Assurance intelligente</small>
+      </span>
+    </a>
+
+    <div class="header">
+      <span class="badge">Création de compte client</span>
+      <h1>Créer votre compte</h1>
+      <p>Inscrivez-vous pour accéder à votre espace client sécurisé.</p>
+    </div>
+
+    <form class="register-form" (ngSubmit)="onRegister()">
+
+      <div class="row">
+        <div class="form-group">
+          <label>Prénom</label>
+          <input type="text" name="firstName" [(ngModel)]="firstName" placeholder="Votre prénom">
+        </div>
+
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" name="lastName" [(ngModel)]="lastName" placeholder="Votre nom">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" [(ngModel)]="email" placeholder="Votre adresse email">
+      </div>
+
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input type="text" name="phone" [(ngModel)]="phone" placeholder="Votre numéro de téléphone">
+      </div>
+
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <div class="password-box">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            name="password"
+            [(ngModel)]="password"
+            placeholder="Votre mot de passe"
+          >
+          <button type="button" (click)="togglePassword()">
+            {{ showPassword ? 'Masquer' : 'Voir' }}
+          </button>
+        </div>
+      </div>
+
+      <p class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </p>
+
+      <button class="register-btn" type="submit" [disabled]="loading">
+        <span *ngIf="!loading">Créer mon compte</span>
+        <span *ngIf="loading">Création...</span>
+      </button>
+    </form>
+
+    <div class="login-link">
+      Vous avez déjà un compte ?
+      <a routerLink="/login">Se connecter</a>
+    </div>
+  </section>
+</main>

@@ -1,0 +1,114 @@
+<main class="reports-page">
+  <section class="reports-hero">
+    <div class="container hero-card">
+      <span class="hero-badge">Rapports IA admin</span>
+
+      <h1>Rapports du dossier #{{ claimId }}</h1>
+
+      <p>
+        Consultez le rapport expert généré par IA, le rapport client et les résultats
+        détaillés des agents IA associés au dossier.
+      </p>
+
+      <button class="btn btn-primary" type="button" (click)="loadReports()">
+        Actualiser
+      </button>
+    </div>
+  </section>
+
+  <section class="container content-section">
+    <div class="state-card" *ngIf="loading">
+      Chargement des rapports...
+    </div>
+
+    <div class="state-card error" *ngIf="!loading && errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <ng-container *ngIf="!loading && reports">
+      <section class="summary-grid">
+        <article>
+          <span>Dossier</span>
+          <strong>#{{ reports.claimId }}</strong>
+        </article>
+
+        <article>
+          <span>Statut</span>
+          <strong class="status-badge" [ngClass]="getStatusClass(reports.status)">
+            {{ reports.status }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Date incident</span>
+          <strong>{{ reports.incidentDate }}</strong>
+        </article>
+      </section>
+
+      <section class="agents-section">
+        <div class="section-head">
+          <span>Résultats agents IA</span>
+          <h2>Analyse Routeur, Validateur et Estimateur</h2>
+        </div>
+
+        <div class="agents-grid" *ngIf="agentResults.length > 0">
+          <article class="agent-card" *ngFor="let agent of agentResults">
+            <div class="agent-card-head">
+              <span class="agent-badge" [ngClass]="getAgentBadgeClass(agent.agentName)">
+                {{ agent.agentName }}
+              </span>
+
+              <strong>{{ formatConfidence(agent.confidenceScore) }}</strong>
+            </div>
+
+            <div class="confidence-bar">
+              <div
+                class="confidence-fill"
+                [style.width]="getConfidenceWidth(agent.confidenceScore)">
+              </div>
+            </div>
+
+            <div class="agent-info">
+              <span>Conclusion</span>
+              <p>{{ agent.conclusion || 'Aucune conclusion disponible.' }}</p>
+            </div>
+
+            <div class="agent-info">
+              <span>Révision humaine</span>
+              <p>{{ agent.needsHumanReview ? 'Oui' : 'Non' }}</p>
+            </div>
+
+            <div class="llm-box">
+              <span>Analyse détaillée IA</span>
+              <pre>{{ formatLlmResponse(agent.rawLlmResponse) }}</pre>
+            </div>
+          </article>
+        </div>
+
+        <div class="state-card" *ngIf="agentResults.length === 0">
+          Aucun résultat agent trouvé pour ce dossier.
+        </div>
+      </section>
+
+      <section class="reports-grid">
+        <article class="report-card expert">
+          <div class="report-head">
+            <span>Rapport expert</span>
+            <h2>Analyse IA interne</h2>
+          </div>
+
+          <pre>{{ reports.aiReport }}</pre>
+        </article>
+
+        <article class="report-card client">
+          <div class="report-head">
+            <span>Rapport client</span>
+            <h2>Version destinée au client</h2>
+          </div>
+
+          <pre>{{ reports.clientReport }}</pre>
+        </article>
+      </section>
+    </ng-container>
+  </section>
+</main>
