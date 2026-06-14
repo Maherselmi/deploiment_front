@@ -1,4 +1,8 @@
 {
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "angular",
+  "outputDirectory": "dist/insureflow/browser",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
