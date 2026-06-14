@@ -1,9 +1,12 @@
 {
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "framework": "angular",
+  "buildCommand": "npx ng build",
+  "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": "dist/insureflow/browser",
+  "framework": "angular",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

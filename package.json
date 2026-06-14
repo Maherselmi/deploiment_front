@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "vercel-build": "ng build --configuration production",
+    "build": "npx --yes ng build",
+    "vercel-build": "npx --yes ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:insureflow": "node dist/insureflow/server/server.mjs"
