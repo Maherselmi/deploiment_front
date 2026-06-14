@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npx ng build",
-  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "npm run vercel-build",
+  "installCommand": "npm install",
   "outputDirectory": "dist/insureflow/browser",
   "framework": "angular",
   "rewrites": [
