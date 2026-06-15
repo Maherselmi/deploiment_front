@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {environment} from "../../../../environments/environment";
 
 
 // Interface représentant la configuration d’un agent IA
@@ -18,8 +19,7 @@ export interface AiAgentConfig {
 export class AiConfigService {
 
   // URL de l’API backend utilisée pour gérer la configuration des agents IA
-  private readonly apiUrl = 'http://localhost:8080/api/admin/ai-config';
-
+  private readonly apiUrl = `${environment.apiUrl}/api/admin/ai-config`;
   // Injection de HttpClient pour communiquer avec le backend
   constructor(private http: HttpClient) {}
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {environment} from "../../../../environments/environment";
 
 export interface PolicyClient {
   id: number;
@@ -26,8 +27,7 @@ export interface Policy {
   providedIn: 'root'
 })
 export class PolicyService {
-  private readonly apiUrl = 'http://localhost:8080/api/policies';
-
+  private readonly apiUrl = `${environment.apiUrl}/api/policies`;
   constructor(private http: HttpClient) {}
 
   getAllPolicies(): Observable<Policy[]> {

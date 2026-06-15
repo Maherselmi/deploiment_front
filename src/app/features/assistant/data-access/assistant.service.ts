@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {environment} from "../../../../environments/environment";
 
 // Interface représentant la requête envoyée à l’assistant IA
 // Elle contient le message de l’utilisateur ainsi que des informations optionnelles
@@ -34,8 +35,7 @@ export interface AssistantResponse {
 export class AssistantService {
 
   // URL racine de l’API backend assistant
-  private readonly apiUrl = 'http://localhost:8080/api/assistant';
-
+  private readonly apiUrl = `${environment.apiUrl}/api/assistant`;
   // URL de l’API backend utilisée pour envoyer les messages à l’assistant IA
   private readonly chatUrl = `${this.apiUrl}/chat`;
 

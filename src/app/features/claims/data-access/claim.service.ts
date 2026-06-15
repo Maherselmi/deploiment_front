@@ -4,6 +4,7 @@ import {map, Observable, throwError} from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import {PolicyClient} from "../../policies/data-access/policy.service";
 import {Claim} from "../models/claim.model";
+import {environment} from "../../../../environments/environment";
 
 
 
@@ -31,9 +32,9 @@ export interface Policy {
 @Injectable({ providedIn: 'root' })
 export class ClaimService {
 
-  private apiUrl      = 'http://localhost:8080/api/claims';
-  private policyUrl   = 'http://localhost:8080/api/policies';
-  private documentUrl = 'http://localhost:8080/api/documents';
+  private apiUrl      = `${environment.apiUrl}/api/claims`;
+  private policyUrl   = `${environment.apiUrl}/api/policies`;
+  private documentUrl = `${environment.apiUrl}/api/documents`;
 
   constructor(private http: HttpClient) {}
 

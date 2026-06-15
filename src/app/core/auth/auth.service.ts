@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 
 // Interface représentant les données envoyées lors de la connexion
@@ -32,7 +33,7 @@ export interface RegisterRequest {
 export class AuthService {
 
   // URL de base de l’API d’authentification côté backend
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = `${environment.apiUrl}/api/auth`;
   constructor(private http: HttpClient, private router: Router) {}
 
   // Méthode utilisée pour connecter un utilisateur

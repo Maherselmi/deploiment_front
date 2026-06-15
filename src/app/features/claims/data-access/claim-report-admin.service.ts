@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 // Importation de Observable pour gérer les réponses asynchrones du backend
 import { Observable } from 'rxjs';
+import {environment} from "../../../../environments/environment";
 
 
 // Interface représentant les rapports liés à un dossier de sinistre côté administrateur
@@ -23,7 +24,7 @@ export interface AdminClaimReports {
 export class ClaimReportAdminService {
 
   // URL de base de l’API backend utilisée pour accéder aux dossiers de sinistre
-  private apiUrl = 'http://localhost:8080/api/claims';
+  private apiUrl = `${environment.apiUrl}/api/claims`;
 
   // Injection de HttpClient pour envoyer des requêtes HTTP vers le backend
   constructor(private http: HttpClient) {}

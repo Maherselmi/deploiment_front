@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ExpertFeedbackRequest, ExpertFeedbackResponse } from '../models/expert-feedback.model';
+import {environment} from "../../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,7 @@ export class ExpertFeedbackService {
    * Backend corrigé : @RequestMapping("/api/expert-feedback")
    * Si tu utilises environment.apiUrl dans ton projet, remplace localhost par environment.apiUrl.
    */
-  private readonly apiUrl = 'http://localhost:8080/api/expert-feedback';
-
+  private readonly apiUrl = `${environment.apiUrl}/api/expert-feedback`;
   constructor(private http: HttpClient) {}
 
   /**

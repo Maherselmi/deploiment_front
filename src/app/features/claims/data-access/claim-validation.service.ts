@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 
 // Importation du modèle représentant un dossier de sinistre
 import { Claim } from "../models/claim.model";
+import {environment} from "../../../../environments/environment";
 
 
 // Interface représentant les données détaillées d’un dossier à valider par un expert humain
@@ -42,7 +43,7 @@ export interface DecisionResponse {
 export class ClaimValidationService {
 
   // URL de base de l’API backend utilisée pour gérer la validation des dossiers de sinistre
-  private readonly BASE_URL = 'http://localhost:8080/api/claims';
+  private readonly BASE_URL = `${environment.apiUrl}/api/claims`;
 
   // Injection de HttpClient pour envoyer des requêtes HTTP vers le backend
   constructor(private http: HttpClient) {}

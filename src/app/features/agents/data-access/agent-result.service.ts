@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {environment} from "../../../../environments/environment";
 
 
 // Interface représentant le résultat retourné par un agent intelligent
@@ -39,8 +40,7 @@ export interface AgentResult {
 export class AgentResultService {
 
   // URL de base de l’API backend pour gérer les résultats des agents
-  private apiUrl = 'http://localhost:8080/api/agent-results';
-
+  private apiUrl = `${environment.apiUrl}/api/agent-results`;
   // Injection de HttpClient pour envoyer des requêtes HTTP vers le backend
   constructor(private http: HttpClient) {}
 
